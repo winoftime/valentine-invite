@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be My Valentine?</title>
+    <title>For Julia 💖</title>
     <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
         body {
@@ -12,74 +12,96 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #ffdde1; /* Soft Pink Background */
-            font-family: 'Indie Flower', cursive; /* Cute handwritten font */
-            overflow: hidden; /* Prevents scrollbars when button moves */
+            background-color: #ffe6e9; /* Very soft pink */
+            font-family: 'Indie Flower', cursive;
+            overflow: hidden; 
         }
 
         .container {
             text-align: center;
             position: relative;
+            z-index: 1;
         }
 
         h1 {
             color: #d63384;
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #fff;
         }
 
-        /* The cute gif image */
+        /* The GIF styling */
         img {
             width: 300px;
-            border-radius: 15px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+            border: 5px solid white;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .btn-group {
             margin-top: 20px;
+            position: relative;
+            height: 60px; /* Reserve space for buttons */
         }
 
         button {
-            padding: 15px 30px;
+            padding: 12px 35px;
             font-size: 1.5rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-family: 'Indie Flower', cursive;
-            transition: all 0.3s ease;
-            margin: 0 10px;
+            transition: transform 0.2s ease;
+            margin: 0 15px;
+            position: relative; 
         }
 
         #yesBtn {
-            background-color: #28a745;
+            background-color: #ff6b81;
             color: white;
-            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 4px 0 #c44558;
         }
-
-        #yesBtn:hover {
-            transform: scale(1.1);
-            background-color: #218838;
+        
+        #yesBtn:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
         #noBtn {
-            background-color: #dc3545;
-            color: white;
-            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
-            position: relative; /* Necessary for movement */
+            background-color: #fff;
+            color: #ff6b81;
+            border: 2px solid #ff6b81;
+            box-shadow: 0 4px 0 #ffdde1;
         }
+
+        /* The Smoke/Poof Animation Class */
+        .poof {
+            position: absolute;
+            font-size: 3rem;
+            pointer-events: none;
+            animation: fadeUp 1s forwards;
+            z-index: 0;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(2) translateY(-20px); }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img id="gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMGIwZHI1N3RrbGd5ajF6eW41ZGd4Z3Z6Z3Z6Z3Z6Z3Z6Z3Z6Z3Z6JmVwPXZ1X2dpZc9zZWFyY2g&rid=giphy.gif&ct=g" alt="Cute Bear">
+        <img id="gif" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3R6eW51Z3ZneG10eG55cnZ3eG55cnZ3eG55cnZ3eG55cnZ3eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/McVHck4S6N4XyT4i2a/giphy.gif" alt="Cute Cats Cuddling">
         
-        <h1 id="question">Will you be my Valentine?</h1>
+        <h1 id="question">Julia, will you be my Valentine?</h1>
         
         <div class="btn-group">
             <button id="yesBtn">Yes! 💖</button>
-            <button id="noBtn">No 😢</button>
+            <button id="noBtn">No 💨</button>
         </div>
     </div>
 
@@ -91,32 +113,55 @@
         const question = document.getElementById('question');
         const gif = document.getElementById('gif');
 
-        // Logic to make the 'No' button run away
+        // Helper to create the smoke effect
+        function createSmoke(x, y) {
+            const smoke = document.createElement('div');
+            smoke.innerText = '💨'; // You can change this to ☁️ or 💩 if you want to be funny
+            smoke.classList.add('poof');
+            smoke.style.left = x + 'px';
+            smoke.style.top = y + 'px';
+            document.body.appendChild(smoke);
+
+            // Remove the element after animation is done to keep DOM clean
+            setTimeout(() => {
+                smoke.remove();
+            }, 1000);
+        }
+
         noBtn.addEventListener('mouseover', () => {
-            const i = Math.floor(Math.random() * (window.innerWidth - noBtn.offsetWidth));
-            const j = Math.floor(Math.random() * (window.innerHeight - noBtn.offsetHeight));
-            
+            // 1. Get current position for the smoke before moving
+            const rect = noBtn.getBoundingClientRect();
+            createSmoke(rect.left, rect.top);
+
+            // 2. Calculate new random position within the screen bounds
+            // We subtract the button size so it doesn't go off the edge
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            // 3. Apply new position
             noBtn.style.position = 'absolute';
-            noBtn.style.left = i + 'px';
-            noBtn.style.top = j + 'px';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
         });
 
-        // Logic for the 'Yes' button
         yesBtn.addEventListener('click', () => {
-            // 1. Change the text
-            question.innerHTML = "Yay! I love you! 💖";
+            // Update text for Julia
+            question.innerHTML = "Yay! See you on the 14th, Julia! 💖";
             
-            // 2. Change the GIF to a celebration one (optional)
-            // gif.src = "URL_TO_HAPPY_GIF"; 
+            // Change to a celebrating cat gif
+            gif.src = "https://media.giphy.com/media/mdChEsg6cjqlq/giphy.gif"; // Bouncing cat
 
-            // 3. Hide the buttons
+            // Hide buttons
             noBtn.style.display = 'none';
             yesBtn.style.display = 'none';
 
-            // 4. Launch Confetti
+            // Confetti explosion
             confetti({
-                particleCount: 150,
-                spread: 70,
+                particleCount: 200,
+                spread: 100,
                 origin: { y: 0.6 }
             });
         });
