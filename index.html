@@ -12,10 +12,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #ffe6e9; /* Very soft pink */
+            background-color: #ffe6e9;
             font-family: 'Indie Flower', cursive;
-            overflow: hidden; /* Stops scrollbars */
-            touch-action: manipulation; /* Improves touch response on mobile */
+            overflow: hidden;
+            touch-action: manipulation;
         }
 
         .container {
@@ -30,15 +30,14 @@
 
         h1 {
             color: #d63384;
-            font-size: 2.5rem; /* Slightly smaller for mobile safety */
+            font-size: 2.5rem;
             margin-bottom: 10px;
             line-height: 1.2;
             text-shadow: 2px 2px 0px #fff;
         }
 
-        /* Responsive Image */
         img {
-            max-width: 80%; /* Fits mobile screens */
+            max-width: 80%;
             height: auto;
             border-radius: 20px;
             box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
@@ -48,8 +47,7 @@
 
         .btn-group {
             margin-top: 20px;
-            position: relative;
-            height: 60px; /* Keeps layout stable */
+            height: 60px;
             display: flex;
             justify-content: center;
             gap: 20px;
@@ -83,10 +81,8 @@
             color: #ff6b81;
             border: 2px solid #ff6b81;
             box-shadow: 0 4px 0 #ffdde1;
-            position: relative; /* Default position */
         }
 
-        /* The Smoke/Poof Animation Class */
         .poof {
             position: absolute;
             font-size: 2rem;
@@ -104,7 +100,7 @@
 <body>
 
     <div class="container">
-        <img id="gif" src="https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif" alt="Cute Cats Cuddling">
+        <img id="gif" src="cuddle.gif" alt="Cute Cats Cuddling">
         
         <h1 id="question">Julia, will you be my Valentine?</h1>
         
@@ -122,7 +118,6 @@
         const question = document.getElementById('question');
         const gif = document.getElementById('gif');
 
-        // Helper to create the smoke effect
         function createSmoke(x, y) {
             const smoke = document.createElement('div');
             smoke.innerText = '💨'; 
@@ -130,56 +125,44 @@
             smoke.style.left = x + 'px';
             smoke.style.top = y + 'px';
             document.body.appendChild(smoke);
-
             setTimeout(() => smoke.remove(), 1000);
         }
 
-        // The logic to move the button
         function moveButton() {
-            // Create smoke at current position
             const rect = noBtn.getBoundingClientRect();
             createSmoke(rect.left, rect.top);
 
-            // Calculate new position with padding (so it doesn't hit the edge)
-            const margin = 20; // safe zone from edges
+            const margin = 20;
             const maxWidth = window.innerWidth - noBtn.offsetWidth - margin;
             const maxHeight = window.innerHeight - noBtn.offsetHeight - margin;
 
-            // Ensure random numbers are positive
             const randomX = Math.max(margin, Math.floor(Math.random() * maxWidth));
             const randomY = Math.max(margin, Math.floor(Math.random() * maxHeight));
 
-            noBtn.style.position = 'fixed'; // 'fixed' makes it relative to the screen, easier for moving
+            noBtn.style.position = 'fixed';
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
-        // Trigger on Mouse Hover (Desktop)
         noBtn.addEventListener('mouseover', moveButton);
-        
-        // Trigger on Touch/Click (Mobile)
         noBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevents the click from firing
+            e.preventDefault();
             moveButton();
         });
         noBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Fallback for some touch devices
+            e.preventDefault();
             moveButton();
         });
 
-        // Yes Button Logic
         yesBtn.addEventListener('click', () => {
-            // Updated Date Message
             question.innerHTML = "Yay! See you on the 13th! 💖";
             
-            // SECOND GIF: Celebrating/Kissing Cats (Fixed Link)
-            gif.src = "https://media.tenor.com/GM0_qMjXkL4AAAAi/peach-goma-love.gif"; 
+            // LINKING TO LOCAL FILE NOW
+            gif.src = "kiss.gif"; 
 
-            // Hide buttons
             noBtn.style.display = 'none';
             yesBtn.style.display = 'none';
 
-            // Confetti
             confetti({
                 particleCount: 200,
                 spread: 100,
