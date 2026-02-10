@@ -14,25 +14,31 @@
             align-items: center;
             background-color: #ffe6e9; /* Very soft pink */
             font-family: 'Indie Flower', cursive;
-            overflow: hidden; 
+            overflow: hidden; /* Stops scrollbars */
+            touch-action: manipulation; /* Improves touch response on mobile */
         }
 
         .container {
             text-align: center;
             position: relative;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
             z-index: 1;
         }
 
         h1 {
             color: #d63384;
-            font-size: 3.5rem;
+            font-size: 2.5rem; /* Slightly smaller for mobile safety */
             margin-bottom: 10px;
+            line-height: 1.2;
             text-shadow: 2px 2px 0px #fff;
         }
 
-        /* The GIF styling */
+        /* Responsive Image */
         img {
-            width: 300px;
+            max-width: 80%; /* Fits mobile screens */
             height: auto;
             border-radius: 20px;
             box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
@@ -43,25 +49,28 @@
         .btn-group {
             margin-top: 20px;
             position: relative;
-            height: 60px; /* Reserve space for buttons */
+            height: 60px; /* Keeps layout stable */
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
 
         button {
-            padding: 12px 35px;
-            font-size: 1.5rem;
+            padding: 12px 30px;
+            font-size: 1.2rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-family: 'Indie Flower', cursive;
             transition: transform 0.2s ease;
-            margin: 0 15px;
-            position: relative; 
+            white-space: nowrap;
         }
 
         #yesBtn {
             background-color: #ff6b81;
             color: white;
             box-shadow: 0 4px 0 #c44558;
+            z-index: 10;
         }
         
         #yesBtn:active {
@@ -74,12 +83,13 @@
             color: #ff6b81;
             border: 2px solid #ff6b81;
             box-shadow: 0 4px 0 #ffdde1;
+            position: relative; /* Default position */
         }
 
         /* The Smoke/Poof Animation Class */
         .poof {
             position: absolute;
-            font-size: 3rem;
+            font-size: 2rem;
             pointer-events: none;
             animation: fadeUp 1s forwards;
             z-index: 0;
@@ -89,13 +99,12 @@
             0% { opacity: 1; transform: scale(1) translateY(0); }
             100% { opacity: 0; transform: scale(2) translateY(-20px); }
         }
-
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img id="gif" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3R6eW51Z3ZneG10eG55cnZ3eG55cnZ3eG55cnZ3eG55cnZ3eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/McVHck4S6N4XyT4i2a/giphy.gif" alt="Cute Cats Cuddling">
+        <img id="gif" src="https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif" alt="Cute Cats Cuddling">
         
         <h1 id="question">Julia, will you be my Valentine?</h1>
         
@@ -116,49 +125,61 @@
         // Helper to create the smoke effect
         function createSmoke(x, y) {
             const smoke = document.createElement('div');
-            smoke.innerText = '💨'; // You can change this to ☁️ or 💩 if you want to be funny
+            smoke.innerText = '💨'; 
             smoke.classList.add('poof');
             smoke.style.left = x + 'px';
             smoke.style.top = y + 'px';
             document.body.appendChild(smoke);
 
-            // Remove the element after animation is done to keep DOM clean
-            setTimeout(() => {
-                smoke.remove();
-            }, 1000);
+            setTimeout(() => smoke.remove(), 1000);
         }
 
-        noBtn.addEventListener('mouseover', () => {
-            // 1. Get current position for the smoke before moving
+        // The logic to move the button
+        function moveButton() {
+            // Create smoke at current position
             const rect = noBtn.getBoundingClientRect();
             createSmoke(rect.left, rect.top);
 
-            // 2. Calculate new random position within the screen bounds
-            // We subtract the button size so it doesn't go off the edge
-            const maxX = window.innerWidth - noBtn.offsetWidth;
-            const maxY = window.innerHeight - noBtn.offsetHeight;
+            // Calculate new position with padding (so it doesn't hit the edge)
+            const margin = 20; // safe zone from edges
+            const maxWidth = window.innerWidth - noBtn.offsetWidth - margin;
+            const maxHeight = window.innerHeight - noBtn.offsetHeight - margin;
 
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
+            // Ensure random numbers are positive
+            const randomX = Math.max(margin, Math.floor(Math.random() * maxWidth));
+            const randomY = Math.max(margin, Math.floor(Math.random() * maxHeight));
 
-            // 3. Apply new position
-            noBtn.style.position = 'absolute';
+            noBtn.style.position = 'fixed'; // 'fixed' makes it relative to the screen, easier for moving
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
+        }
+
+        // Trigger on Mouse Hover (Desktop)
+        noBtn.addEventListener('mouseover', moveButton);
+        
+        // Trigger on Touch/Click (Mobile)
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents the click from firing
+            moveButton();
+        });
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Fallback for some touch devices
+            moveButton();
         });
 
+        // Yes Button Logic
         yesBtn.addEventListener('click', () => {
-            // Update text for Julia
-            question.innerHTML = "Yay! See you on the 14th, Julia! 💖";
+            // Updated Date Message
+            question.innerHTML = "Yay! See you on the 13th! 💖";
             
-            // Change to a celebrating cat gif
-            gif.src = "https://media.giphy.com/media/mdChEsg6cjqlq/giphy.gif"; // Bouncing cat
+            // Celebrating GIF
+            gif.src = "https://media.giphy.com/media/T86i6yDyOYz7J6v9d5/giphy.gif"; 
 
             // Hide buttons
             noBtn.style.display = 'none';
             yesBtn.style.display = 'none';
 
-            // Confetti explosion
+            // Confetti
             confetti({
                 particleCount: 200,
                 spread: 100,
